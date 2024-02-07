@@ -5,6 +5,8 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -17,9 +19,31 @@ class UserController extends Controller
         ], 200);
     }
 
-    function login(Request $request) {
+    function register(Request $request)
+    {
 
-        if(!Auth::attempt($request->only('email','password'))){
+        $this->validate($request, [
+            'username' => 'required|min:4|unique:users',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:8',
+        ]);
+
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'data' => $user,
+            // 'token' => $token,
+        ], 200);
+    }
+
+    function login(Request $request)
+    {
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
@@ -44,6 +68,6 @@ class UserController extends Controller
         return response()->json([
             'data' => $user,
             'token' => $token,
-        ],200);
+        ], 200);
     }
 }

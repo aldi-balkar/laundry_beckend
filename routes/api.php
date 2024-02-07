@@ -22,14 +22,23 @@ use App\Http\Controllers\api\UserController;
 //     return $request->user();
 // });
 
-Route::get('/promo', [PromoController::class,'readAll']);
-Route::get('/shop', [ShopController::class,'readAll']);
-Route::get('/laundry', [LaundryController::class,'readAll']);
-Route::get('/user', [UserController::class,'readAll']);
+Route::get('/promo', [PromoController::class, 'readAll']);
+Route::get('/shop', [ShopController::class, 'readAll']);
+Route::get('/laundry', [LaundryController::class, 'readAll']);
+Route::get('/user', [UserController::class, 'readAll']);
 
-Route::get('/register', [UserController::class,'register']);
-Route::get('/login', [UserController::class,'login']);
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/login', [UserController::class, 'login']);
 
-Route::middleware('auth:sanctum')->group(function(){
+Route::middleware('auth:sanctum')->group(function () {
+    // Laundry
+    Route::get('/laundry/user/{id}', [LaundryController::class, 'whereUserId']);
+    Route::post('/laundry/claim', [LaundryController::class, 'claim']);
+
+    // Promo
     Route::get('/promo/limit', [PromoController::class, 'readLimit']);
+
+    // Shop
+    Route::get('/shop/recommendation/limit', [ShopController::class, 'readRecommendationLimit']);
+    Route::get('/shop/search/city/{name}', [ShopController::class, 'searchByCity']);
 });
